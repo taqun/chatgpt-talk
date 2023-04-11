@@ -1,33 +1,78 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { useEffect, useState } from "react";
+
+import styles from "./App.module.scss";
+import { MessageForm } from "./components/MessageForm";
+import { Message } from "./models/MessageStore";
+import { postMessage } from "./api/OpenAIClient";
+import { Speaker } from "./sound/Speaker";
+
+const speaker = new Speaker();
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "system-prompt",
+      role: "system",
+      content:
+        "あなたは映画に出てくるような優秀であると同時にユーモアも持ち合わせた優れたAIとして返答してください。",
+    },
+  ]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const onSubmit = async (message: string) => {
+    const newMessages = [...messages];
+    newMessages.push({
+      id: new Date().getTime().toString(),
+      role: "user",
+      content: message,
+    });
+    setMessages(newMessages);
+
+    const requestMessages = newMessages.map((message) => {
+      return { role: message.role, content: message.content };
+    });
+
+    setIsLoading(true);
+
+    const responseMessage = await postMessage(requestMessages);
+    if (responseMessage) {
+      setMessages([...newMessages, responseMessage]);
+      speaker.speak(responseMessage.content);
+    }
+
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    if (window) {
+      speaker.initialize(window);
+    }
+  }, [window]);
 
   return (
-    <div className="App">
+    <div className={styles.appContainer}>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        {messages.map((message) => {
+          if (message.role == "system") {
+            return null;
+          }
+          return (
+            <div key={message.id}>
+              <p>
+                <b>{message.role}</b>: {message.content}
+              </p>
+            </div>
+          );
+        })}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      {isLoading && (
+        <div>
+          <p>isLoading...</p>
+        </div>
+      )}
+      <div className={styles.messageFormContainer}>
+        <MessageForm onSubmit={onSubmit} />
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </div>
   );
 }
