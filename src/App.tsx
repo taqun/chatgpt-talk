@@ -5,26 +5,31 @@ import { MessageForm } from "./components/MessageForm";
 import { Message } from "./models/MessageStore";
 import { postMessage } from "./api/OpenAIClient";
 import { Speaker } from "./sound/Speaker";
+import { useSpeechRecognition } from "./hooks/useSpeechRecognition";
+import { MicControl } from "./components/MicControl";
 
 const speaker = new Speaker();
 
 function App() {
+  const [inputText, setInputText] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "system-prompt",
       role: "system",
-      content:
-        "あなたは映画に出てくるような優秀であると同時にユーモアも持ち合わせた優れたAIとして返答してください。",
+      content: "あなたは優秀なアシスタントとして振る舞ってください。",
     },
   ]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const onSubmit = async (message: string) => {
+  const { isListening, hasSound, transcript, startListening, stopListening } =
+    useSpeechRecognition();
+
+  const onSubmit = async (content: string) => {
     const newMessages = [...messages];
     newMessages.push({
       id: new Date().getTime().toString(),
       role: "user",
-      content: message,
+      content,
     });
     setMessages(newMessages);
 
@@ -42,6 +47,12 @@ function App() {
 
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    if (transcript == "") return;
+
+    onSubmit(transcript);
+  }, [transcript]);
 
   useEffect(() => {
     if (window) {
@@ -70,8 +81,20 @@ function App() {
           <p>isLoading...</p>
         </div>
       )}
+      <div className={styles.micControlContainer}>
+        <MicControl
+          isListening={isListening}
+          hasSound={hasSound}
+          onStartListening={() => startListening()}
+          onStopListening={() => stopListening()}
+        />
+      </div>
       <div className={styles.messageFormContainer}>
-        <MessageForm onSubmit={onSubmit} />
+        <MessageForm
+          text={inputText}
+          onUpdateText={(text) => setInputText(text)}
+          onSubmit={() => onSubmit(inputText)}
+        />
       </div>
     </div>
   );

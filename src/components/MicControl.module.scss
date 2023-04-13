@@ -1,0 +1,36 @@
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .iconContainer {
+    display: flex;
+
+    .isListening {
+      color: red;
+    }
+
+    .isNotListening {
+      color: black;
+    }
+
+    svg {
+      margin-left: 1rem;
+      margin-top: 2px;
+    }
+
+    .hasSound {
+      fill: black;
+    }
+
+    .hasNotSound {
+      fill: #ccc;
+    }
+  }
+
+  button {
+    width: 80px;
+    margin-bottom: 1rem;
+  }
+}

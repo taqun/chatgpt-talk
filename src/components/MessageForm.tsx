@@ -1,20 +1,23 @@
-import { FC, useRef, useState } from "react";
+import { FC, useRef } from "react";
 
 import styles from "./MessageForm.module.scss";
 
 export type MessageFormProps = {
-  onSubmit: (message: string) => void;
+  text: string;
+  onUpdateText: (value: string) => void;
+  onSubmit: () => void;
 };
 
-export const MessageForm: FC<MessageFormProps> = ({ onSubmit }) => {
-  const [message, setMessage] = useState<string>("やぁ、調子どう？");
-
+export const MessageForm: FC<MessageFormProps> = ({
+  text,
+  onUpdateText,
+  onSubmit,
+}) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const onClick = () => {
-    onSubmit(message);
+    onSubmit();
 
-    setMessage("");
     if (textareaRef.current) {
       textareaRef.current.value = "";
     }
@@ -24,11 +27,13 @@ export const MessageForm: FC<MessageFormProps> = ({ onSubmit }) => {
     <div className={styles.container}>
       <textarea
         ref={textareaRef}
-        defaultValue={message}
+        value={text}
         rows={3}
-        onChange={(event) => setMessage(event.target.value)}
+        onChange={(event) => onUpdateText(event.target.value)}
       />
-      <button onClick={onClick}>Submit</button>
+      <div className={styles.buttonContainer}>
+        <button onClick={onClick}>Submit</button>
+      </div>
     </div>
   );
 };

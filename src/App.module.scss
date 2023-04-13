@@ -1,10 +1,19 @@
 .appContainer {
   width: 80%;
   margin: 0 auto;
+  padding-bottom: 150px;
+
+  .micControlContainer {
+    width: 8%;
+    position: fixed;
+    top: 0;
+    left: 1%;
+  }
 
   .messageFormContainer {
     width: 80%;
-    position: absolute;
+    background: #fff;
+    position: fixed;
     bottom: 0;
   }
 }
