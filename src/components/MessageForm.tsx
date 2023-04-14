@@ -3,13 +3,11 @@ import { FC, useRef } from "react";
 import styles from "./MessageForm.module.scss";
 
 export type MessageFormProps = {
-  text: string;
   onUpdateText: (value: string) => void;
   onSubmit: () => void;
 };
 
 export const MessageForm: FC<MessageFormProps> = ({
-  text,
   onUpdateText,
   onSubmit,
 }) => {
@@ -18,8 +16,9 @@ export const MessageForm: FC<MessageFormProps> = ({
   const onClick = () => {
     onSubmit();
 
-    if (textareaRef.current) {
+    if (textareaRef.current != null) {
       textareaRef.current.value = "";
+      console.log("clear");
     }
   };
 
@@ -27,7 +26,6 @@ export const MessageForm: FC<MessageFormProps> = ({
     <div className={styles.container}>
       <textarea
         ref={textareaRef}
-        value={text}
         rows={3}
         onChange={(event) => onUpdateText(event.target.value)}
       />

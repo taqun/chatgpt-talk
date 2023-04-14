@@ -85,7 +85,6 @@ function App() {
       </div>
       <div className={styles.messageFormContainer}>
         <MessageForm
-          text={inputText}
           onUpdateText={(text) => setInputText(text)}
           onSubmit={() => onSubmit(inputText)}
         />

@@ -19,6 +19,8 @@ export const useSpeechRecognition = (): UseSpeechRecognitionHook => {
     null
   );
 
+  console.log("autostartEnabled", autostartEnabled);
+
   const startListening = useCallback(() => {
     setIsListening(true);
     setAutostartEnabled(true);
