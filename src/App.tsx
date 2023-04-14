@@ -4,23 +4,22 @@ import styles from "./App.module.scss";
 import { MessageForm } from "./components/MessageForm";
 import { Message } from "./models/MessageStore";
 import { postMessage } from "./api/OpenAIClient";
-import { Speaker } from "./sound/Speaker";
 import { useSpeechRecognition } from "./hooks/useSpeechRecognition";
 import { MicControl } from "./components/MicControl";
-
-const speaker = new Speaker();
+import { useSpeechSynthesis } from "./hooks/useSpeechSynthesis";
 
 function App() {
   const [inputText, setInputText] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "system-prompt",
-      role: "system",
-      content: "あなたは優秀なアシスタントとして振る舞ってください。",
-    },
+    // {
+    //   id: "system-prompt",
+    //   role: "system",
+    //   content: "あなたは優秀なアシスタントとして振る舞ってください。",
+    // },
   ]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const { speak } = useSpeechSynthesis();
   const { isListening, hasSound, transcript, startListening, stopListening } =
     useSpeechRecognition();
 
@@ -42,23 +41,18 @@ function App() {
     const responseMessage = await postMessage(requestMessages);
     if (responseMessage) {
       setMessages([...newMessages, responseMessage]);
-      speaker.speak(responseMessage.content);
+      speak(responseMessage.content);
     }
 
     setIsLoading(false);
   };
 
   useEffect(() => {
+    if (isLoading) return;
     if (transcript == "") return;
 
     onSubmit(transcript);
   }, [transcript]);
-
-  useEffect(() => {
-    if (window) {
-      speaker.initialize(window);
-    }
-  }, [window]);
 
   return (
     <div className={styles.appContainer}>

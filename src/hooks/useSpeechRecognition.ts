@@ -22,6 +22,7 @@ export const useSpeechRecognition = (): UseSpeechRecognitionHook => {
   const startListening = useCallback(() => {
     setIsListening(true);
     setAutostartEnabled(true);
+    recognition?.stop();
     recognition?.start();
   }, [recognition]);
 
@@ -53,7 +54,7 @@ export const useSpeechRecognition = (): UseSpeechRecognitionHook => {
     };
 
     speechRecognition.onend = () => {
-      console.log("onend");
+      console.log("onend", autostartEnabled);
 
       if (autostartEnabled) {
         setIsListening(true);

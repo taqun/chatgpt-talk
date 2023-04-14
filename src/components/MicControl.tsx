@@ -15,8 +15,6 @@ export const MicControl: FC<MicControlProps> = ({
   onStartListening,
   onStopListening,
 }) => {
-  console.log(hasSound);
-
   return (
     <div className={styles.container}>
       <div className={styles.iconContainer}>
